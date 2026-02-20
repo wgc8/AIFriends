@@ -38,7 +38,6 @@ async function handleRegister() {
       else {
         errInfo.value = data.result || '注册失败，请稍后再试'
       }
-      console.log('注册响应:', data)
     } catch (error) {
       console.error('注册请求失败:', error)
     }

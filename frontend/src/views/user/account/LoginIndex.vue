@@ -33,7 +33,6 @@ async function handleLogin() {
       else {
         errInfo.value = data.result || '登录失败，请稍后再试'
       }
-      console.log('登录响应:', data)
     } catch (error) {
       console.error('登录请求失败:', error)
     }
