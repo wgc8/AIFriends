@@ -1,6 +1,4 @@
-from django.urls import path
-from django.conf import settings
-from django.views.static import serve  # 处理静态/媒体文件的核心视图
+from django.urls import path, re_path
 
 from web.views.index import index
 from web.views.user.account.login import LoginView
@@ -15,8 +13,8 @@ urlpatterns = [
     path('api/user/account/register/', RegisterView.as_view()),
     path('api/user/account/refresh_token/', RefreshTokenView.as_view()),
     path('api/user/account/get_user_info/', GetUserInfoView.as_view()),
-    #用serve视图处理media文件请求
-    path('media/<path:path>', serve, {'document_root': settings.MEDIA_ROOT}),
     # SPA入口：所有非media/非api的请求指向index
     path('', index),
+    # 兜底路由：所有非media/非static/非assets的请求指向index（注意顺序，必须放在最后）
+    re_path(r'^(?!media/|static/|assets/).*$', index)
 ]
