@@ -16,7 +16,7 @@ urlpatterns = [
     path('api/user/account/refresh_token/', RefreshTokenView.as_view()),
     path('api/user/account/get_user_info/', GetUserInfoView.as_view()),
 
-    path('api/user/profile/update', UpdateProfileView.as_view()), 
+    path('api/user/profile/update/', UpdateProfileView.as_view()), 
     # SPA入口：所有非media/非api的请求指向index
     path('', index),
     # 兜底路由：所有非media/非static/非assets的请求指向index（注意顺序，必须放在最后）

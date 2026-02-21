@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from web.models.user import UserProfile
-from web.views.utils.photo import remove_old_photo
+from web.views.utils.photo import remove_photo
 
 
 class UpdateProfileView(APIView):
@@ -32,7 +32,7 @@ class UpdateProfileView(APIView):
                 })
 
             if photo:
-                remove_old_photo(user_profile.photo)
+                remove_photo(user_profile.photo)
                 user_profile.photo = photo
             user_profile.profile = profile
             user_profile.update_time = now()
