@@ -6,6 +6,7 @@ import {useUserStore} from "@/stores/user.js";
 import {ref, useTemplateRef} from "vue";
 import {base64ToFile} from "@/js/utils/base64_to_file.js";
 import api from "@/js/http/api.js";
+import router from "@/router";
 
 const user = useUserStore()
 const photoRef = useTemplateRef('photo-ref')
@@ -37,6 +38,9 @@ async function handleUpdate() {
       const data = res.data
       if (data.result === 'success') {
         user.setUserInfo(data)
+        router.push({
+        name: 'homepage-index'
+      })
       } else {
         errorMessage.value = data.result
       }
