@@ -5,7 +5,6 @@ from rest_framework.permissions import IsAuthenticated
 from web.models.character import Character
 from web.models.user import UserProfile
 
-
 class CreateCharacterView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
