@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -7,7 +8,12 @@ class HomepageIndexView(APIView):
     def get(self, request):
         try:
             items_count = int(request.query_params.get('items_count'))
-            characters_raw = Character.objects.all().order_by('-id')[items_count: items_count + 1]
+            search_query = request.query_params.get('search_query', '').strip()
+            if search_query:
+                query_set = Character.objects.filter(Q(name__icontains=search_query) | Q(profile__icontains=search_query))
+            else:
+                query_set = Character.objects.all()
+            characters_raw = query_set.order_by('-id')[items_count: items_count + 20]
             characters = []
             for character in characters_raw:
                 author = character.author
