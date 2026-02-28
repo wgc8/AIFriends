@@ -6,3 +6,4 @@ media/
 staticfiles/
 static/
 .venv/
+!/backend/media/user/photos/default.png
