@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from langchain_core.messages import HumanMessage
 
-from web.models.friend import Friend
 from web.views.friend.message.chat.graph import ChatGraph
+from web.models.friend import Friend
 from web.models.message import Message
 
 class SSERenderer(BaseRenderer):
@@ -45,14 +45,33 @@ class MessageView(APIView):
 
         def event_stream():
             full_usage = {}
+            full_output = ""
             for msg, metadata in app.stream(input_message, stream_mode="messages"):
                 if isinstance(msg, BaseMessageChunk):
                     if msg.content:
+                        full_output += msg.content
                         yield f"data: {json.dumps({'content': msg.content}, ensure_ascii=False)}\n\n"  #yield类似于return, 但下次调用next()时会从yield的下一行作为函数入口继续执行
                     if hasattr(msg, 'usage_metadata') and msg.usage_metadata:
                             full_usage = msg.usage_metadata
             yield 'data: [DONE]\n\n'
-            print("Full usage:", full_usage)
+            #print("Full usage:", full_usage)
+            #按json格式解析metadata中的token使用量，并保存到数据库
+            input_tokens = full_usage.get('input_tokens', 0)
+            output_tokens = full_usage.get('output_tokens', 0)
+            total_tokens = full_usage.get('total_tokens', 0)
+            Message.objects.create(
+                friend=friend,
+                user_message=user_message[:5000],
+                input=json.dumps(
+                    [m.model_dump() for m in input_message['messages']],
+                    ensure_ascii=False,
+                )[:10000],
+                output=full_output[:5000],
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                total_tokens=total_tokens,
+            )
+
 
         response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
         response['Cache-Control'] = 'no-cache'

@@ -6,6 +6,7 @@ import api from "@/js/http/api.js";
 import streamApi from "@/js/http/streamApi.js";
 
 const props = defineProps(['friendId'])
+const emit = defineEmits(['pushBackMessage', 'addToLastMessage'])
 const inputRef = useTemplateRef('input-ref')
 const message = ref('')
 // 防止重复发送消息
@@ -37,6 +38,9 @@ async function handleStreamSend() {
   const content = message.value.trim()
   if (!content) return
   message.value = ''
+  // 先把用户消息添加到聊天记录中，再发送请求
+  emit('pushBackMessage', {role: 'user', content: content, id: crypto.randomUUID()})
+  emit('pushBackMessage', {role: 'ai', content: '', id: crypto.randomUUID()})
   try {
     const res = await streamApi('/api/friend/message/chat/', {
       body: {
@@ -47,7 +51,8 @@ async function handleStreamSend() {
         if (isDone) {
           isProcessing = false
         } else if (data.content) {
-          console.log(data.content)
+          // 在预生成ai的空消息的基础上追加内容
+          emit('addToLastMessage', data.content)
         }
       },
       onerror(err) {
@@ -66,7 +71,7 @@ defineExpose({
 </script>
 
 <template>
-  <form @submit.prevent="handleSend" class="absolute bottom-4 left-2 h-12 w-86 flex items-center">
+  <form @submit.prevent="handleStreamSend" class="absolute bottom-4 left-2 h-12 w-86 flex items-center">
     <input
         ref="input-ref"
         v-model="message"
@@ -74,7 +79,7 @@ defineExpose({
         type="text"
         placeholder="文本输入..."
     >
-    <div @click="handleSend" class="absolute right-2 w-8 h-8 flex justify-center items-center cursor-pointer">
+    <div @click="handleStreamSend" class="absolute right-2 w-8 h-8 flex justify-center items-center cursor-pointer">
       <SendIcon />
     </div>
     <div class="absolute right-10 w-8 h-8 flex justify-center items-center cursor-pointer">

@@ -4,9 +4,9 @@ from web.models.friend import Friend
 
 class Message(models.Model):
     friend = models.ForeignKey(Friend, on_delete=models.CASCADE)
-    user_message = models.TextField(default="", max_length=500)
-    input = models.TextField(default="", max_length=500)
-    output = models.TextField(default="", max_length=500)
+    user_message = models.TextField(default="", max_length=5000)
+    input = models.TextField(default="", max_length=10000)
+    output = models.TextField(default="", max_length=5000)
     input_tokens = models.IntegerField(default=0)
     output_tokens = models.IntegerField(default=0)
     total_tokens = models.IntegerField(default=0)
