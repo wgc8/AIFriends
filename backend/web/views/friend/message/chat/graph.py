@@ -13,6 +13,13 @@ class ChatGraph:
             model=os.getenv('OPENAI_MODEL'),
             openai_api_key=os.getenv('OPENAI_API_KEY'),
             openai_api_base=os.getenv('OPENAI_API_BASE'),
+            temperature=0.7,
+            streaming=True,
+            model_kwargs={
+                "stream_options": {
+                    "include_usage": True,  #输出token使用量
+                }
+            }
         )
         
         class AgentState(TypedDict):

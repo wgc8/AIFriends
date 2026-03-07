@@ -1,17 +1,20 @@
 <script setup>
 import SendIcon from "@/components/character/icons/SendIcon.vue";
 import MicIcon from "@/components/character/icons/MicIcon.vue";
-import {useTemplateRef, ref} from "vue";
+import {useTemplateRef, ref, onMounted} from "vue";
 import api from "@/js/http/api.js";
+import streamApi from "@/js/http/streamApi.js";
 
 const props = defineProps(['friendId'])
 const inputRef = useTemplateRef('input-ref')
 const message = ref('')
+// 防止重复发送消息
+let isProcessing = false
 
 function focus() {
   inputRef.value.focus()
 }
-
+// 同步接收消息
 async function handleSend() {
   // 处理发送消息的逻辑
   const content = message.value.trim()
@@ -23,6 +26,34 @@ async function handleSend() {
       message: content,
     })
     console.log(res.data)
+  }catch (err) {
+    console.log(err)
+  }
+}
+
+async function handleStreamSend() {
+  if (isProcessing) return
+  isProcessing = true
+  const content = message.value.trim()
+  if (!content) return
+  message.value = ''
+  try {
+    const res = await streamApi('/api/friend/message/chat/', {
+      body: {
+        friend_id: props.friendId,
+        message: content,
+      },
+       onmessage(data, isDone) {
+        if (isDone) {
+          isProcessing = false
+        } else if (data.content) {
+          console.log(data.content)
+        }
+      },
+      onerror(err) {
+        isProcessing = false
+      },
+    })
   }catch (err) {
     console.log(err)
   }
