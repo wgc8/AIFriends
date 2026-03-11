@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 from django.http import StreamingHttpResponse
 from langchain_core.messages import HumanMessage, BaseMessageChunk, SystemMessage, AIMessage
 from rest_framework.renderers import BaseRenderer
@@ -65,10 +66,10 @@ class MessageChatView(APIView):
 
         input_message = add_system_prompt(input_message, friend)
         input_message = add_recent_messages(input_message, friend)
-        
+        # pprint(input_message)
+
         #这里的event_stream是一个生成器函数，使用yield来逐步返回数据。pythoN对于含有yield的函数会将其转化为一个生成器函数，非普通函数
         #调用event_stream()时，并不会立即执行函数体，而是返回一个生成器对象。当使用for循环或next()函数来迭代这个生成器对象时，才会执行函数体。
-
         def event_stream():
             full_usage = {}
             full_output = ""
@@ -97,7 +98,6 @@ class MessageChatView(APIView):
                 output_tokens=output_tokens,
                 total_tokens=total_tokens,
             )
-
 
         response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
         response['Cache-Control'] = 'no-cache'
