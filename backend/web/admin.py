@@ -3,6 +3,7 @@ from web.models.friend import Friend
 from web.models.user import UserProfile
 from web.models.character import Character
 from web.models.message import Message
+from web.models.system_prompt import SystemPrompt
 # Register your models here.
 
 @admin.register(UserProfile)
@@ -32,3 +33,5 @@ class MessageAdmin(admin.ModelAdmin):
     # list_display = ('friend', 'user_message', 'input', 'output', 'input_tokens', 'output_tokens', 'create_time')
     # search_fields = ('friend__me__user__username', 'friend__character__name', 'user_message', 'input', 'output')
     # list_filter = ('create_time',)
+
+admin.site.register(SystemPrompt)

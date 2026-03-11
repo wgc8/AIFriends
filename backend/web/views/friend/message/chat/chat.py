@@ -1,6 +1,6 @@
 import json
 from django.http import StreamingHttpResponse
-from langchain_core.messages import HumanMessage, BaseMessageChunk
+from langchain_core.messages import HumanMessage, BaseMessageChunk, SystemMessage, AIMessage
 from rest_framework.renderers import BaseRenderer
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -10,13 +10,36 @@ from langchain_core.messages import HumanMessage
 from web.views.friend.message.chat.graph import ChatGraph
 from web.models.friend import Friend
 from web.models.message import Message
+from web.models.system_prompt import SystemPrompt
 
 class SSERenderer(BaseRenderer):
     media_type = 'text/event-stream'
     format = 'txt'
     def render(self, data, media_type=None, renderer_context=None):
         return data
-class MessageView(APIView):
+    
+def add_system_prompt(state, friend):
+    msgs = state['messages']
+    system_prompts = SystemPrompt.objects.filter(title='回复').order_by('order_number')
+    prompt = ''
+    for sp in system_prompts:
+        prompt += sp.prompt
+    prompt += f'\n【角色性格】\n{friend.character.profile}\n'
+    return {'messages': [SystemMessage(prompt)] + msgs}
+
+
+def add_recent_messages(state, friend):
+    msgs = state['messages']
+    message_raw = list(Message.objects.filter(friend=friend).order_by('-id')[:10])
+    message_raw.reverse()
+    messages = []
+    for m in message_raw:
+        messages.append(HumanMessage(m.user_message))
+        messages.append(AIMessage(m.output))
+    #前10论对话加在系统提示词和用户输入之间
+    return {'messages': msgs[:1] + messages + msgs[-1:]}
+
+class MessageChatView(APIView):
     permission_classes = [IsAuthenticated]
     renderer_classes = [SSERenderer]
 
@@ -40,6 +63,9 @@ class MessageView(APIView):
             "messages": [HumanMessage(content=user_message)]
         }
 
+        input_message = add_system_prompt(input_message, friend)
+        input_message = add_recent_messages(input_message, friend)
+        
         #这里的event_stream是一个生成器函数，使用yield来逐步返回数据。pythoN对于含有yield的函数会将其转化为一个生成器函数，非普通函数
         #调用event_stream()时，并不会立即执行函数体，而是返回一个生成器对象。当使用for循环或next()函数来迭代这个生成器对象时，才会执行函数体。
 

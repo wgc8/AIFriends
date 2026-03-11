@@ -16,6 +16,7 @@ async function showModal() {
   await nextTick()
   inputRef.value.focus()
   // console.log(history.value)
+  chatHistoryRef.value.scrollToBottom()
 }
 
 
