@@ -4,6 +4,7 @@ import HomepageIcon from "@/components/navbar/icons/HomepageIcon.vue";
 import FriendIcon from "@/components/navbar/icons/FriendIcon.vue";
 import CreateIcon from "@/components/navbar/icons/CreateIcon.vue";
 import SearchIcon from "@/components/navbar/icons/SearchIcon.vue";
+import XIcon from "@/components/navbar/icons/XIcon.vue";
 import { useUserStore } from "@/stores/user";
 import UserMenu from "@/components/navbar/UserMenu.vue";
 import {ref, watch} from "vue";
@@ -27,6 +28,16 @@ function handleSearch() {
   })
 }
 
+function clearSearchAndRefresh() {
+  // 1. 清空输入框内容
+  searchQuery.value = ''
+  // 2. 刷新主页（跳转到首页并清空搜索参数，实现刷新效果）
+  router.push({
+    name: 'homepage-index',
+    query: {} // 清空搜索参数
+  })
+}
+
 </script>
 
 <template>
@@ -42,13 +53,30 @@ function handleSearch() {
         </div>
         <div class="navbar-center w-4/5 max-w-180 flex justify-center">
           <form @submit.prevent="handleSearch" class="join w-4/5 flex justify-center">
-            <input v-model="searchQuery" class="input join-item rounded-l-full w-4/5" placeholder="搜索你感兴趣的内容" />
+            <!-- 核心容器：relative + 宽度100%，确保定位准确 -->
+            <div class="join-item relative w-full">
+              <!-- 输入框：圆角+宽度100%+右侧留空间 -->
+              <input 
+                v-model="searchQuery" 
+                class="input w-full rounded-l-full pr-12"
+                placeholder="搜索你感兴趣的内容"
+              >
+              <button
+                v-if="searchQuery.trim()"
+                type="button"
+                @click="clearSearchAndRefresh"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                <XIcon class="w-5 h-5" />
+              </button>
+            </div>
             <button class="btn join-item rounded-r-full gap-0">
               <SearchIcon />
               搜索
             </button>
           </form>
         </div>
+
         <div class="navbar-end">
           <RouterLink v-if="user.isLogin()" :to="{name: 'create-index'}" active-class="btn-active" class="btn btn-ghost text-base mr-6">
             <CreateIcon />
