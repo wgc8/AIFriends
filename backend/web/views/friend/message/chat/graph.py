@@ -1,5 +1,5 @@
 import os
-from pprint import pprint
+# from pprint import pprint
 from typing import TypedDict, Annotated, Sequence
 
 from django.utils.timezone import localtime, now
@@ -38,7 +38,7 @@ class ChatGraph:
             messages: Annotated[Sequence[BaseMessage], add_messages]
 
         def model_call(state: AgentState) -> AgentState:
-            pprint(state)
+            # pprint(state)
             res = llm.invoke(state['messages'])
             return {'messages': [res]}
 
