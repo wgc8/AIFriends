@@ -8,4 +8,6 @@ static/
 .venv/
 *.env
 *.log
+backend/web/documents/data.txt
+backend/web/documents/lancedb_storage/
 !/backend/media/user/photos/default.png
