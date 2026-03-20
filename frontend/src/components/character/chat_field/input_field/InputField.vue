@@ -33,10 +33,10 @@ async function handleSend() {
 }
 
 async function handleStreamSend() {
-  if (isProcessing) return
-  isProcessing = true
   const content = message.value.trim()
   if (!content) return
+  if (isProcessing) return
+  isProcessing = true
   message.value = ''
   // 先把用户消息添加到聊天记录中，再发送请求
   emit('pushBackMessage', {role: 'user', content: content, id: crypto.randomUUID()})

@@ -10,4 +10,5 @@ static/
 *.log
 backend/web/documents/data.txt
 backend/web/documents/lancedb_storage/
+frontend/public/vad/
 !/backend/media/user/photos/default.png
