@@ -20,11 +20,12 @@ class ASRView(APIView):
             })
         pcm_data = audio_file.read()
         text = asyncio.run(self.run_asr_tasks(pcm_data))
+        print(f"ASR result: {text}")
         return Response({
             'result': 'success',
             'text': text
         })
-    
+
     async def run_asr_tasks(self, pcm_data):
         # 生成task_id
         task_id = str(uuid.uuid4())
@@ -59,21 +60,20 @@ class ASRView(APIView):
             }))
             # 读取ws的响应，判断是否就绪
             async for msg in ws:
-                if json.loads(msg)['header']['event'] == 'task_started':
+                if json.loads(msg)['header']['event'] == 'task-started':
                     break
             _, text = await asyncio.gather(
-                    self.asr_sender(self, pcm_data, ws, task_id),
-                    self.asr_receiver(self, ws)
-                )
+                self.asr_sender(pcm_data, ws, task_id),
+                self.asr_receiver(ws),
+            )
             return text
 
     async def asr_sender(self, pcm_data, ws, task_id):
-        chunk_size = 3200  # 每次发送200ms的音频数据
-        for i in range(0, len(pcm_data), chunk_size):
-            chunk = pcm_data[i:i+chunk_size]
-            await ws.send(chunk)
+        chunk = 3200
+        print(f"Sending audio data in chunks of {chunk} bytes...")
+        for i in range(0, len(pcm_data), chunk):
+            await ws.send(pcm_data[i: i + chunk])
             await asyncio.sleep(0.01)
-        # 发送结束消息
         await ws.send(json.dumps({
             "header": {
                 "action": "finish-task",
@@ -85,9 +85,9 @@ class ASRView(APIView):
             }
         }))
 
-    
     async def asr_receiver(self, ws):
         text = ''
+        print("Waiting for ASR results...")
         async for msg in ws:
             data = json.loads(msg)
             event = data['header']['event']
@@ -95,6 +95,7 @@ class ASRView(APIView):
                 output = data['payload']['output']
                 if output.get('transcription', None) and output['transcription']['sentence_end']:
                     text += output['transcription']['text']
-            elif event in ['task_finished', 'task_failed']:
+            elif event in ['task-finished', 'task-failed']:
                 break
         return text
+    

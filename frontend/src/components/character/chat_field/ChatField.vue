@@ -35,7 +35,7 @@ const modalStyle = computed(() => {
 })
 
 function handlePushBackMessage(msg) {
-  console.log('handlePushBackMessage', msg)
+  // console.log('handlePushBackMessage', msg)
   history.value.push(msg)
   chatHistoryRef.value.scrollToBottom()
 }
