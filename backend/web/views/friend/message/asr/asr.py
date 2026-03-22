@@ -20,7 +20,6 @@ class ASRView(APIView):
             })
         pcm_data = audio_file.read()
         text = asyncio.run(self.run_asr_tasks(pcm_data))
-        print(f"ASR result: {text}")
         return Response({
             'result': 'success',
             'text': text
@@ -70,7 +69,6 @@ class ASRView(APIView):
 
     async def asr_sender(self, pcm_data, ws, task_id):
         chunk = 3200
-        print(f"Sending audio data in chunks of {chunk} bytes...")
         for i in range(0, len(pcm_data), chunk):
             await ws.send(pcm_data[i: i + chunk])
             await asyncio.sleep(0.01)
@@ -87,7 +85,6 @@ class ASRView(APIView):
 
     async def asr_receiver(self, ws):
         text = ''
-        print("Waiting for ASR results...")
         async for msg in ws:
             data = json.loads(msg)
             event = data['header']['event']
