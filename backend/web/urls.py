@@ -21,6 +21,7 @@ from web.views.friend.get_or_create import GetOrCreateFriendView
 from web.views.friend.remove import RemoveFriendView
 from web.views.friend.message.chat.chat import MessageChatView
 from web.views.friend.message.get_history import GetHistoryView
+from web.views.friend.message.asr.asr import ASRView
 
 urlpatterns = [
     path('api/user/account/login/', LoginView.as_view()),
@@ -41,6 +42,7 @@ urlpatterns = [
     path('api/friend/remove/', RemoveFriendView.as_view()),
     path('api/friend/message/chat/', MessageChatView.as_view()),
     path('api/friend/message/get_history/', GetHistoryView.as_view()),
+    path('api/friend/message/asr/asr/', ASRView.as_view()),
 
     # SPA入口：所有非media/非api的请求指向index
     path('', index),
