@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.timezone import now, localtime
 
 from web.models.user import UserProfile
+from web.models.voice import Voice
 
 def photo_upload_to(instance, filename):
     ext = filename.split('.')[-1]
@@ -17,6 +18,7 @@ def background_image_upload_to(instance, filename):
 class Character(models.Model):
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
+    voice = models.ForeignKey(Voice, default=None, on_delete=models.CASCADE, null=True, blank=True)
     profile = models.TextField(max_length=100000)
     photo = models.ImageField(upload_to=photo_upload_to)
     background_image = models.ImageField(upload_to=background_image_upload_to)

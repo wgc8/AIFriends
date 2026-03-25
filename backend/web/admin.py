@@ -4,6 +4,7 @@ from web.models.user import UserProfile
 from web.models.character import Character
 from web.models.message import Message
 from web.models.system_prompt import SystemPrompt
+from web.models.voice import Voice
 # Register your models here.
 
 @admin.register(UserProfile)
@@ -35,3 +36,5 @@ class MessageAdmin(admin.ModelAdmin):
     # list_filter = ('create_time',)
 
 admin.site.register(SystemPrompt)
+
+admin.site.register(Voice)
