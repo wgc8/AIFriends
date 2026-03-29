@@ -5,7 +5,7 @@ import requests
 
 def list_voice():
     headers = {
-        "Authorization": f"Bearer {os.getenv('API_KEY')}",
+        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}",
         "Content-Type": "application/json"
     }
     data = {

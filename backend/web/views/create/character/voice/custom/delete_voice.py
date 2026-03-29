@@ -5,7 +5,7 @@ import requests
 
 def delete_voice(voice_id):
     headers = {
-        "Authorization": f"Bearer {os.getenv('API_KEY')}",
+        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}",
         "Content-Type": "application/json"
     }
     data = {
