@@ -8,12 +8,15 @@ import {base64ToFile} from "@/js/utils/base64_to_file.js";
 import api from "@/js/http/api.js";
 import {useRoute, useRouter} from "vue-router";
 import {useUserStore} from "@/stores/user.js";
+import Voice from "@/views/create/character/components/Voice.vue";
 
 const user = useUserStore()
 const router = useRouter()
 const route = useRoute()
 const characterId = route.params.character_id
 const character = ref(null)
+const voices = ref([])
+const curVoiceId = ref(null)
 
 onMounted(async () => {
   try {
@@ -25,6 +28,8 @@ onMounted(async () => {
     const data = res.data
     if (data.result === 'success') {
       character.value = data.character
+      voices.value = data.voices
+      curVoiceId.value = data.character.voice_id
     }
   } catch (err) {
   }
@@ -32,6 +37,7 @@ onMounted(async () => {
 
 const photoRef = useTemplateRef('photo-ref')
 const nameRef = useTemplateRef('name-ref')
+const voiceRef = useTemplateRef('voice-ref')
 const profileRef = useTemplateRef('profile-ref')
 const backgroundImageRef = useTemplateRef('background-image-ref')
 const errorMessage = ref('')
@@ -40,6 +46,7 @@ async function handleUpdate() {
   const photo = photoRef.value.myPhoto
   const name = nameRef.value.myName?.trim()
   const profile = profileRef.value.myProfile?.trim()
+  const voiceId = voiceRef.value.myVoice
   const backgroundImage = backgroundImageRef.value.myBackgroundImage
 
   errorMessage.value = ''
@@ -47,6 +54,8 @@ async function handleUpdate() {
     errorMessage.value = '头像不能为空'
   } else if (!name) {
     errorMessage.value = '名字不能为空'
+  } else if (!voiceId) {
+    errorMessage.value = '音色不能为空'
   } else if (!profile) {
     errorMessage.value = '角色介绍不能为空'
   } else if (!backgroundImage) {
@@ -56,6 +65,7 @@ async function handleUpdate() {
     formData.append('character_id', characterId)
     formData.append('name', name)
     formData.append('profile', profile)
+    formData.append('voice_id', voiceId)
 
     if (photo !== character.value.photo) {
       formData.append('photo', base64ToFile(photo, 'photo.png'))
@@ -91,6 +101,7 @@ async function handleUpdate() {
         <h3 class="text-lg font-bold my-4">更新角色</h3>
         <Photo ref="photo-ref" :photo="character.photo" />
         <Name ref="name-ref" :name="character.name" />
+        <Voice ref="voice-ref" :voices="voices" :curVoiceId="curVoiceId" />
         <Profile ref="profile-ref" :profile="character.profile" />
         <BackgroundImage ref="background-image-ref" :backgroundImage="character.background_image" />
 

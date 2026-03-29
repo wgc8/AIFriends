@@ -3,6 +3,7 @@ from django.utils.timezone import now, localtime
 
 class Voice(models.Model):
     name = models.CharField(max_length=100)
+    # 阿里云文档中需要的定义
     voice_id = models.CharField(max_length=100, unique=True)
     create_time = models.DateTimeField(default=now)
 

@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
 from web.models.character import Character
-
+from web.models.voice import Voice
 
 class GetSingleCharacterView(APIView):
     permission_classes = [IsAuthenticated]
@@ -11,6 +11,13 @@ class GetSingleCharacterView(APIView):
         try:
             character_id = request.query_params.get('character_id')
             character = Character.objects.get(id=character_id, author__user=request.user)
+            voices_raw = Voice.objects.order_by('id')
+            voice_list = []
+            for voice in voices_raw:
+                voice_list.append({
+                    'id': voice.id,
+                    'name': voice.name,
+                })
             if character:
               return Response({
                   'result': 'success',
@@ -20,7 +27,9 @@ class GetSingleCharacterView(APIView):
                       'profile': character.profile,
                       'photo': character.photo.url,
                       'background_image': character.background_image.url,
-                  }
+                      'voice_id': character.voice.id,
+                  },
+                  'voices': voice_list,
               })
             else:
               return Response({

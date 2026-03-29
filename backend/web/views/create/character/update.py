@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
+from web.models.voice import Voice
 from web.models.character import Character
 from web.views.utils.photo import remove_photo
 
@@ -17,7 +18,7 @@ class UpdateCharacterView(APIView):
             profile = request.data['profile'].strip()[:100000]
             photo = request.FILES.get('photo', None)
             background_image = request.FILES.get('background_image', None)
-
+            voice_id = request.data.get('voice_id', None)
             if not name:
                 return Response({
                     'result': "名字不能为空"
@@ -32,7 +33,10 @@ class UpdateCharacterView(APIView):
             if background_image:
                 remove_photo(character.background_image)
                 character.background_image = background_image
+            
+            voice = Voice.objects.get(id=voice_id)
             character.name = name
+            character.voice = voice
             character.profile = profile
             character.update_time = now()
             character.save()

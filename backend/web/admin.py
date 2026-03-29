@@ -16,7 +16,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Character)
 class CharacterAdmin(admin.ModelAdmin):
-    raw_id_fields = ('author',)
+    raw_id_fields = ('author', 'voice',)
     # list_display = ('author', 'name', 'profile', 'create_time', 'update_time')
     # search_fields = ('author__user__username', 'name', 'profile')
     # list_filter = ('create_time', 'update_time')
