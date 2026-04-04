@@ -37,4 +37,9 @@ class MessageAdmin(admin.ModelAdmin):
 
 admin.site.register(SystemPrompt)
 
-admin.site.register(Voice)
+@admin.register(Voice)
+class VoiceAdmin(admin.ModelAdmin):
+    raw_id_fields = ('author',)
+    # list_display = ('name', 'author', 'voice_id', 'create_time')
+    # search_fields = ('name', 'author__user__username', 'voice_id')
+    # list_filter = ('create_time',)
