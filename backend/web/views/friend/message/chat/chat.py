@@ -176,7 +176,13 @@ class MessageChatView(APIView):
 
     def event_stream(self, app, inputs, friend, message):
         mq = Queue()
-        thread = threading.Thread(target=self.work, args=(app, inputs, mq, friend.character.voice.voice_id))
+        # 获取当前角色的音色 ID，如果为空则使用默认音色
+        voice_instance = friend.character.voice
+        # 百炼平台上的默认音色
+        default_voice_id = "longanyang"
+        # 核心判断：有音色用音色，没音色用默认
+        voice_id = voice_instance.voice_id if voice_instance else default_voice_id
+        thread = threading.Thread(target=self.work, args=(app, inputs, mq, voice_id))
         thread.start()
 
         full_output = ''
