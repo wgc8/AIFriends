@@ -23,28 +23,39 @@ from web.views.friend.message.chat.chat import MessageChatView
 from web.views.friend.message.get_history import GetHistoryView
 from web.views.friend.message.asr.asr import ASRView
 from web.views.create.character.voice.get_list import GetVoiceListView
+from web.views.create.character.voice.custom.create import CreateCustomVoiceView
+from web.views.create.character.voice.custom.remove import RemoveCustomVoiceView
 
 urlpatterns = [
+    # 用户账户相关接口
     path('api/user/account/login/', LoginView.as_view()),
     path('api/user/account/logout/', LogoutView.as_view()),
     path('api/user/account/register/', RegisterView.as_view()),
     path('api/user/account/refresh_token/', RefreshTokenView.as_view()),
     path('api/user/account/get_user_info/', GetUserInfoView.as_view()),
-
     path('api/user/profile/update/', UpdateProfileView.as_view()), 
+    
+    # 角色相关接口
     path('api/create/character/create/', CreateCharacterView.as_view()),
     path('api/create/character/update/', UpdateCharacterView.as_view()),
     path('api/create/character/remove/', RemoveCharacterView.as_view()),
     path('api/create/character/get_single/', GetSingleCharacterView.as_view()),
     path('api/create/character/get_list/', GetListCharacterView.as_view()),
-    path('api/create/character/voice/get_list/', GetVoiceListView.as_view()),
     path('api/homepage/index/', HomepageIndexView.as_view()),
+    
+    # 好友关系相关接口
     path('api/friend/get_or_create/', GetOrCreateFriendView.as_view()),
     path('api/friend/get_list/', GetListFriendView.as_view()),
     path('api/friend/remove/', RemoveFriendView.as_view()),
     path('api/friend/message/chat/', MessageChatView.as_view()),
     path('api/friend/message/get_history/', GetHistoryView.as_view()),
     path('api/friend/message/asr/asr/', ASRView.as_view()),
+
+    # 语音相关接口
+    path('api/create/character/voice/custom/create/', CreateCustomVoiceView.as_view()),
+    path('api/create/character/voice/custom/remove/', RemoveCustomVoiceView.as_view()),
+    path('api/create/character/voice/get_list/', GetVoiceListView.as_view()),
+
     # SPA入口：所有非media/非api的请求指向index
     path('', index),
     # 兜底路由：所有非media/非static/非assets的请求指向index（注意顺序，必须放在最后）
